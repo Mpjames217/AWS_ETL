@@ -1,0 +1,110 @@
+name: de-neural-de-normalisers
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  run-tests:
+    # if: false # this will cause the job to be skipped - delete to enable 
+    name: run-tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Python Setup
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+              
+    
+      - name: Create-Environment
+        run: make create-environment
+      - name: Install Modules
+        run: make dev-setup
+
+      - name: safety check
+        uses: pyupio/safety-action@v1
+        with:
+          api-key: ${{secrets.SAFETY_API_KEY}}
+
+      - name: Configure AWS Credential
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: run-all-checks
+        env: 
+          PG_DATABASE: ${{secrets.PG_DATABASE}}
+          PG_HOST: ${{secrets.PG_HOST}}
+          PG_PASSWORD: ${{secrets.PG_PASSWORD}}
+          PG_PORT: ${{secrets.PG_PORT}}
+          PG_USER: ${{secrets.PG_USER}}
+          PG_DATABASE_DW: ${{secrets.PG_DATABASE_DW}}
+          PG_HOST_DW: ${{secrets.PG_HOST_DW}}
+          PG_PASSWORD_DW: ${{secrets.PG_PASSWORD_DW}}
+        run: make run-checks
+      
+
+
+      
+
+  deploy-terraform:
+    # if: false # this will cause the job to be skipped - delete to enable 
+    name: deploy-terraform
+    runs-on: ubuntu-latest
+    environment: development
+    needs: run-tests
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credential
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Terraform Setup
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        working-directory: terraform
+        run: terraform init
+
+      - name: Terraform plan
+        working-directory: terraform
+        env:
+          TF_VAR_PG_DATABASE: ${{secrets.PG_DATABASE}}
+          TF_VAR_PG_HOST: ${{secrets.PG_HOST}}
+          TF_VAR_PG_PASSWORD: ${{secrets.PG_PASSWORD}}
+          TF_VAR_PG_PORT: ${{secrets.PG_PORT}}
+          TF_VAR_PG_USER: ${{secrets.PG_USER}}
+          TF_VAR_PG_DATABASE_DW: ${{secrets.PG_DATABASE_DW}}
+          TF_VAR_PG_HOST_DW: ${{secrets.PG_HOST_DW}}
+          TF_VAR_PG_PASSWORD_DW: ${{secrets.PG_PASSWORD_DW}}
+          TF_VAR_SNS_EMAIL: ${{secrets.SNS_EMAIL}}
+        run: terraform plan
+
+
+      - name: Terraform apply
+        working-directory: terraform
+        env:
+          TF_VAR_PG_DATABASE: ${{secrets.PG_DATABASE}}
+          TF_VAR_PG_HOST: ${{secrets.PG_HOST}}
+          TF_VAR_PG_PASSWORD: ${{secrets.PG_PASSWORD}}
+          TF_VAR_PG_PORT: ${{secrets.PG_PORT}}
+          TF_VAR_PG_USER: ${{secrets.PG_USER}}
+          TF_VAR_PG_DATABASE_DW: ${{secrets.PG_DATABASE_DW}}
+          TF_VAR_PG_HOST_DW: ${{secrets.PG_HOST_DW}}
+          TF_VAR_PG_PASSWORD_DW: ${{secrets.PG_PASSWORD_DW}}
+          TF_VAR_SNS_EMAIL: ${{secrets.SNS_EMAIL}}
+        run: terraform apply -auto-approve
+
+
+      
+
