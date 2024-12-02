@@ -1,10 +1,12 @@
-# The Data Engineering Project - Neural Normalisers
+#  AWS_ELT_Pipeline
 ## The Product
 
 A data platform that extracts data from an operational database archives it in a data lake, and makes it available in a remodelled OLAP data warehouse. The application will:
   - operate automatically on a schedule
   - log progress to Cloudwatch
   - trigger email alerts in the event of failures
+
+ ![alt text](readme_images/image.png)
 
 ## Technical Details
 
@@ -20,22 +22,9 @@ A data platform that extracts data from an operational database archives it in a
 
 ## The Data
 
-The tables to be ingested from `totesys` are:
-|tablename|
-|----------|
-|counterparty|
-|currency|
-|department|
-|design|
-|staff|
-|sales_order|
-|address|
-|payment|
-|purchase_order|
-|payment_type|
-|transaction|
+The platform is designed to load data from the following database: https://dbdiagram.io/d/SampleDB-6332fecf7b3d2034ffcaaa92 
 
-The star Schema will contain the following:
+The reformatted [star schema](https://dbdiagram.io/d/637a423fc9abfc611173f637) will contain the following:
 |tablename|
 |---------|
 |fact_sales_order|
@@ -45,10 +34,6 @@ The star Schema will contain the following:
 |dim_date|
 |dim_currency|
 
-["Sales" schema](https://dbdiagram.io/d/637a423fc9abfc611173f637)
-
-The overall structure of the resulting data warehouse is shown [here](https://dbdiagram.io/d/63a19c5399cb1f3b55a27eca).
-
 ### History
 Your warehouse will contain a full history of all updates to _facts_. For example, if a sales order is 
 created in `totesys` and then later updated (perhaps the `units_sold` field is changed), you should have _two_ 
@@ -56,24 +41,27 @@ records in the `fact_sales_order` table.
 
 ## Requirements
 
-Python Version 3.11.1
+- Python Version 3.11.1
+- An AWS account
+- A SafetyCLI account and access key
 
-## Instructions
+## Instructions for Use
 1. Add and populate the following GitHub secrets:
 
-              |Secrets|
-              |----------|
-              |PG_DATABASE|
-              |PG_HOST|
-              |PG_PASSWORD|
-              |PG_PORT|
-              |PG_USER|
-              |PG_DATABASE_DW|
-              |PG_HOST_DW|
-              |PG_PASSWORD_DW|
-              |AWS_ACCESS_KEY_ID|
-              |AWS_SECRET_ACCESS_KEY|
-              |AWS_REGION|
+|Secrets| Description|
+|-------|------------|
+|PG_USER|Postgres username|
+|PG_PASSWORD|Postgres password for OLTP database|
+|PG_DATABASE|Name of Postgres OLTP database|
+|PG_HOST|OLTP datebase host|
+|PG_PORT|Datbase port|
+|PG_PASSWORD_DW|Postgres password for OLAP database|
+|PG_DATABASE_DW|Name of Postgres OLAP database|
+|PG_HOST_DW|OLAP datebase host|
+|AWS_ACCESS_KEY_ID| AWS access key|
+|AWS_SECRET_ACCESS_KEY| AWS secret access key|
+|AWS_REGION| AWS region|
+|SNS_EMAIL| Recipient address of Cloudwatch emails|
 
 
 2. create an AWS S3 bucket to store the terraform state
