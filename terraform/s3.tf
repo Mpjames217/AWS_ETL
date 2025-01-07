@@ -10,22 +10,22 @@ resource "aws_s3_bucket" "lambda_code_bucket" {
   bucket_prefix = "lambda-code-bucket"
 }
 
-resource "aws_s3_object" "ingestion_lambda" {
+resource "aws_s3_object" "extract_lambda" {
   bucket = aws_s3_bucket.lambda_code_bucket.id
-  key = "write_to_s3_lambda"
-  source = "${path.module}/../src/ingestion.zip"
+  key = "extract_lambda"
+  source = "${path.module}/../src/extract.zip"
 }
 
-resource "aws_s3_object" "process_data_lambda" {
+resource "aws_s3_object" "transform_lambda" {
   bucket = aws_s3_bucket.lambda_code_bucket.id
-  key = "process_data_lambda"
-  source = "${path.module}/../src/process_data.zip"
+  key = "transform_lambda"
+  source = "${path.module}/../src/transform.zip"
 }
 
-resource "aws_s3_object" "populate_data_warehouse_lambda" {
+resource "aws_s3_object" "load_lambda" {
   bucket = aws_s3_bucket.lambda_code_bucket.id
-  key = "populate_data_warehouse"
-  source = "${path.module}/../src/populate_data_warehouse.zip"
+  key = "load_lambda"
+  source = "${path.module}/../src/load.zip"
 }
 
 resource "aws_s3_object" "pg_8000_layer" {

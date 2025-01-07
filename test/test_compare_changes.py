@@ -1,4 +1,4 @@
-from src.ingestion import check_additions, check_deletions, check_changes, main_check_for_changes
+from src.extract import check_additions, check_deletions, check_changes, main_check_for_changes
 import pytest, boto3, json
 from moto import mock_aws
 from unittest.mock import Mock, patch
@@ -449,7 +449,7 @@ def s3_mock():
 
 @pytest.fixture()
 def datetime_mock():
-    with patch('src.ingestion.datetime') as mock_dt:
+    with patch('src.extract.datetime') as mock_dt:
         mock_dt.now.return_value.isoformat.return_value = ('mock_timestamp')
         yield mock_dt
 

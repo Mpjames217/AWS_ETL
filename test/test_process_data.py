@@ -1,4 +1,4 @@
-from src.process_data import *
+from src.transform import *
 import pytest
 from unittest.mock import patch
 from moto import mock_aws
@@ -151,7 +151,7 @@ def s3_processed_mock():
 
 @pytest.fixture()
 def datetime_mock():
-    with patch('src.process_data.datetime') as mock_dt:
+    with patch('src.transform.datetime') as mock_dt:
         mock_dt.now.return_value.isoformat.return_value = ('mock_timestamp')
         yield mock_dt
 
@@ -198,7 +198,7 @@ class TestWriteDataframeToS3:
 
 @pytest.fixture()
 def mock_get_latest_s3_keys():
-    with patch('src.process_data.get_latest_s3_keys') as latest_timestamp:
+    with patch('src.transform.get_latest_s3_keys') as latest_timestamp:
         latest_timestamp.return_value = ('latest_timestamp')
 
 combined_data = [[
@@ -272,7 +272,7 @@ combined_data = [[
 
 @pytest.fixture()
 def mock_fetch_from_s3():
-    with patch('src.process_data.fetch_from_s3') as mock_fetch:
+    with patch('src.transform.fetch_from_s3') as mock_fetch:
         mock_fetch.side_effect = combined_data
         yield mock_fetch
 
@@ -461,7 +461,7 @@ def s3_mock():
 
 @pytest.fixture()
 def datetime_mock():
-    with patch('src.process_data.datetime') as mock_dt:
+    with patch('src.transform.datetime') as mock_dt:
         mock_dt.now.return_value.isoformat.return_value = ('mock_timestamp')
         yield mock_dt
 

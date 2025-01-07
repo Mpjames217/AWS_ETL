@@ -1,4 +1,4 @@
-from src.populate_data_warehouse import *
+from src.load import *
 import pytest
 from unittest.mock import patch
 from moto import mock_aws

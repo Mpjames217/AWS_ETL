@@ -1,4 +1,4 @@
-from src.ingestion import *
+from src.extract import *
 from datetime import datetime
 from decimal import Decimal
 from unittest.mock import patch , Mock
@@ -227,12 +227,12 @@ class TestLambdaHandler:
         {"currency_id": 3, "currency_code": "EUR", "created_at": "2022-11-03T14:20:49", "amount": 200.0}
     ]
 
-    @patch('src.ingestion.fetch_from_s3')
-    @patch('src.ingestion.fetch_data_from_table')
-    @patch('src.ingestion.get_latest_s3_keys')
-    @patch('src.ingestion.connect_to_db')
-    @patch('src.ingestion.datetime')
-    @patch('src.ingestion.main_check_for_changes')
+    @patch('src.extract.fetch_from_s3')
+    @patch('src.extract.fetch_data_from_table')
+    @patch('src.extract.get_latest_s3_keys')
+    @patch('src.extract.connect_to_db')
+    @patch('src.extract.datetime')
+    @patch('src.extract.main_check_for_changes')
     def test_lambda_handler_correct_s3_files_created(self,
                                                 mock_check_for_changes,
                                                 mock_date_time,
