@@ -70,6 +70,6 @@ records in the `fact_sales_order` table.
 
 4. Ensure your branch is listed on the YAML in the on>push>branches section
 
-5. Push to git hub
+5. Push to GitHub
 
-6. If all tests pass and requirments are satisfied, the code will be deployed in you're AWS account.
+6. If all tests pass and requirments are satisfied, the code will be deployed in your AWS account.
